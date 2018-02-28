@@ -12,7 +12,8 @@ class App extends React.Component {
       user: null,
       username: "",
       password: "",
-      error: ""
+      error: "",
+      name: ""
     }
   }
 
@@ -36,8 +37,11 @@ class App extends React.Component {
         username: this.state.username,
         password: this.state.password
       })
-  
-      this.setState({ username: '', password: '', user})
+      console.log('tulostetaan user:')
+      console.log(user)
+      
+      this.setState({ name: user.name, username: '', password: '', user: user.token})
+      console.log(this.state.user)
     } catch(exception) {
       this.setState({
         error: 'käyttäjätunnus tai salasana virheellinen',
@@ -85,6 +89,8 @@ class App extends React.Component {
     return (
       <div>
         <h2>blogs</h2>
+        <h3>{this.state.name} kirjautuneena sisään</h3>
+        <br/>
         {this.state.blogs.map(blog =>
           <Blog key={blog._id} blog={blog} />
         )}
