@@ -2,7 +2,7 @@ import React from 'react'
 import Blog from './components/Blog'
 /* import LoginForm from './components/LoginForm' */
 import blogService from './services/blogs'
-/* import loginService from './services/loginService'  */
+import loginService from './services/loginService'
 
 class App extends React.Component {
   constructor(props) {
@@ -11,7 +11,8 @@ class App extends React.Component {
       blogs: [],
       user: null,
       username: "",
-      password: ""
+      password: "",
+      error: ""
     }
   }
 
@@ -21,39 +22,32 @@ class App extends React.Component {
 
   }
 
-  /*
+  handleLoginFieldChange = (event) => {
+    this.setState({ [event.target.name]: event.target.value })
+    console.log(event.target.value)
+  }
+
   login = async (event) => {
-    console.log('login metodissa')
     event.preventDefault()
+    console.log('login in with', this.state.username, this.state.password)
+
     try{
       const user = await loginService.login({
         username: this.state.username,
         password: this.state.password
       })
   
-      this.setState({username: '', password: '', user: user})
+      this.setState({ username: '', password: '', user})
     } catch(exception) {
       this.setState({
         error: 'käyttäjätunnus tai salasana virheellinen',
       })
+      console.log(exception)
+      console.log(this.state.error)
       setTimeout(() => {
         this.setState({ error: null })
       }, 5000)
     }
-  }
-*/
-
-  handleLoginFieldChange = (event) => {
-    if (event.target.name === 'password') {
-      this.setState({ password: event.target.value })
-    } else if (event.target.name === 'username') {
-      this.setState({ username: event.target.value })
-    }
-  }
-
-  login = async (event) => {
-    event.preventDefault()
-    console.log('login in with', this.state.username, this.state.password)
   }
 
   render() {
