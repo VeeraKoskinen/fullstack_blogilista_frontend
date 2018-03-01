@@ -3,6 +3,8 @@ import Blog from './components/Blog'
 /* import LoginForm from './components/LoginForm' */
 import blogService from './services/blogs'
 import loginService from './services/loginService'
+import Notification from './components/Notification'
+import './index.css'
 
 class App extends React.Component {
   constructor(props) {
@@ -13,7 +15,8 @@ class App extends React.Component {
       user: null,
       username: "",
       password: "",
-      error: "",
+      error: null,
+      notification: null,
       name: "",
 
       title: "",
@@ -60,16 +63,9 @@ class App extends React.Component {
       console.log(this.state.user)
 
     } catch (exception) {
-      this.setState({
-        error: 'käyttäjätunnus tai salasana virheellinen',
-      })
+      this.updateError('Käyttäjätunnus tai salasana on virheellinen!')
 
       console.log(exception)
-      console.log(this.state.error)
-
-      setTimeout(() => {
-        this.setState({ error: null })
-      }, 5000)
     }
   }
 
@@ -91,6 +87,8 @@ class App extends React.Component {
         author: this.state.author,
         url: this.state.url
       })
+
+      this.updateNotification(`Lisättiin uusi blogi: ${this.state.title} `)
       this.setState({
         blogs: this.state.blogs.concat(newBlog),
         title: "",
@@ -98,11 +96,13 @@ class App extends React.Component {
         url: ""
       })
 
-    
+      setTimeout(() => {
+        this.setState({ error: null })
+      }, 5000)
+
     } catch (exception) {
-      this.setState({
-        error: 'blogia ei voitu lisätä',
-      })
+      this.updateError("blogia ei voitu lisätä")
+
 
       console.log(exception)
       console.log(this.state.error)
@@ -111,10 +111,25 @@ class App extends React.Component {
         this.setState({ error: null })
       }, 5000)
     }
-    
+
+  }
+
+  updateNotification = (message) => {
+    this.setState({ notification: message })
+    setTimeout(() => {
+      this.setState({ notification: null })
+    }, 3000)
+  }
+
+  updateError = (message) => {
+    this.setState({ error: message })
+    setTimeout(() => {
+      this.setState({ error: null })
+    }, 3000)
   }
 
   render() {
+
 
     if (this.state.user === null) {
       console.log('ensimmäinen if renderissä')
@@ -142,6 +157,7 @@ class App extends React.Component {
             </div>
             <button type="submit"> Kirjaudu </button>
           </form>
+          <Notification message={this.state.error} className={"error"} />
         </div>
       )
     }
@@ -155,6 +171,9 @@ class App extends React.Component {
         {this.state.blogs.map(blog =>
           <Blog key={blog._id} blog={blog} />
         )}
+
+        <Notification message={this.state.notification} className={"notification"} />
+        <Notification message={this.state.error} className={"error"} />
 
         <h2>Luo uusi</h2>
         <form onSubmit={this.addBlog}>
