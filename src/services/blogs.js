@@ -8,15 +8,15 @@ const getAll = async () => {
   return request.data
 }
 
-const setToken = ({ newToken }) => {
+const setToken = (newToken) => {
   token = `bearer ${newToken}`
 }
 
 const create = async (newObject) => {
-  const config = {
+  const configuration = {
     headers: { 'Authorization': token }
   }
-  const response = await axios.post(baseUrl, newObject, config)
+  const response = await axios.post(baseUrl, newObject, configuration)
   return response.data
 }
 

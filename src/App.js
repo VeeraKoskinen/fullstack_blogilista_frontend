@@ -14,7 +14,11 @@ class App extends React.Component {
       username: "",
       password: "",
       error: "",
-      name: ""
+      name: "",
+
+      title: "",
+      author: "",
+      url: ""
     }
   }
 
@@ -27,12 +31,12 @@ class App extends React.Component {
       const user = JSON.parse(loggedUserJSON)
       this.setState({ user })
       blogService.setToken(user.token)
-      this.setState({ name: user.name})
+      this.setState({ name: user.name })
     }
 
   }
 
-  handleLoginFieldChange = (event) => {
+  handleFieldChange = (event) => {
     this.setState({ [event.target.name]: event.target.value })
     console.log(event.target.value)
   }
@@ -72,10 +76,42 @@ class App extends React.Component {
   logout = async () => {
     console.log('siirryttiin logout metodiin')
 
-    window.localStorage.removeItem('loggedBlogappUser') 
+    window.localStorage.removeItem('loggedBlogappUser')
     this.setState({ user: null, username: '', password: '' })
     window.localStorage.clear()
 
+  }
+
+  addBlog = async (event) => {
+    event.preventDefault()
+    console.log('blogin lisäys-metodissa')
+    try {
+      const newBlog = await blogService.create({
+        title: this.state.title,
+        author: this.state.author,
+        url: this.state.url
+      })
+      this.setState({
+        blogs: this.state.blogs.concat(newBlog),
+        title: "",
+        author: "",
+        url: ""
+      })
+
+    
+    } catch (exception) {
+      this.setState({
+        error: 'blogia ei voitu lisätä',
+      })
+
+      console.log(exception)
+      console.log(this.state.error)
+
+      setTimeout(() => {
+        this.setState({ error: null })
+      }, 5000)
+    }
+    
   }
 
   render() {
@@ -92,7 +128,7 @@ class App extends React.Component {
                 type="text"
                 name="username"
                 value={this.state.username}
-                onChange={this.handleLoginFieldChange}
+                onChange={this.handleFieldChange}
               />
             </div>
             <div>
@@ -101,7 +137,7 @@ class App extends React.Component {
                 type="password"
                 name="password"
                 value={this.state.password}
-                onChange={this.handleLoginFieldChange}
+                onChange={this.handleFieldChange}
               />
             </div>
             <button type="submit"> Kirjaudu </button>
@@ -112,13 +148,45 @@ class App extends React.Component {
 
     return (
       <div>
-        <h2>blogs</h2>
+        <h2>Blogit</h2>
         {this.state.name} kirjautuneena sisään  <form onSubmit={this.logout}> <button type="submit">Kirjaudu ulos</button> </form>
         <br />
         <br />
         {this.state.blogs.map(blog =>
           <Blog key={blog._id} blog={blog} />
         )}
+
+        <h2>Luo uusi</h2>
+        <form onSubmit={this.addBlog}>
+          <div>
+            otsikko:
+          <input
+              type="text"
+              name="title"
+              value={this.state.title}
+              onChange={this.handleFieldChange}
+            />
+          </div>
+          <div>
+            omistaja:
+          <input
+              type="text"
+              name="author"
+              value={this.state.author}
+              onChange={this.handleFieldChange}
+            />
+          </div>
+          <div>
+            url:
+          <input
+              type="text"
+              name="url"
+              value={this.state.url}
+              onChange={this.handleFieldChange}
+            />
+          </div>
+          <button type="submit">Luo blogi</button>
+        </form>
       </div>
     )
   }
