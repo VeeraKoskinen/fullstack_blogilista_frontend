@@ -7,6 +7,7 @@ import loginService from './services/loginService'
 class App extends React.Component {
   constructor(props) {
     super(props)
+    console.log('alun state:ien luonti')
     this.state = {
       blogs: [],
       user: null,
@@ -21,6 +22,14 @@ class App extends React.Component {
     const blogs = await blogService.getAll()
     this.setState({ blogs })
 
+    const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
+    if (loggedUserJSON) {
+      const user = JSON.parse(loggedUserJSON)
+      this.setState({ user })
+      blogService.setToken(user.token)
+      this.setState({ name: user.name})
+    }
+
   }
 
   handleLoginFieldChange = (event) => {
@@ -30,28 +39,43 @@ class App extends React.Component {
 
   login = async (event) => {
     event.preventDefault()
-    console.log('login in with', this.state.username, this.state.password)
+    console.log('login in with: ', this.state.username, this.state.password)
 
-    try{
+    try {
       const user = await loginService.login({
         username: this.state.username,
         password: this.state.password
       })
-      console.log('tulostetaan user:')
-      console.log(user)
-      
-      this.setState({ name: user.name, username: '', password: '', user: user.token})
+
+      window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user))
+      blogService.setToken(user.token)
+
+      this.setState({ name: user.name, username: '', password: '', user })
+      console.log('nimi asetetaan userin mukaan:')
+      console.log(this.state.name)
       console.log(this.state.user)
-    } catch(exception) {
+
+    } catch (exception) {
       this.setState({
         error: 'käyttäjätunnus tai salasana virheellinen',
       })
+
       console.log(exception)
       console.log(this.state.error)
+
       setTimeout(() => {
         this.setState({ error: null })
       }, 5000)
     }
+  }
+
+  logout = async () => {
+    console.log('siirryttiin logout metodiin')
+
+    window.localStorage.removeItem('loggedBlogappUser') 
+    this.setState({ user: null, username: '', password: '' })
+    window.localStorage.clear()
+
   }
 
   render() {
@@ -89,8 +113,9 @@ class App extends React.Component {
     return (
       <div>
         <h2>blogs</h2>
-        <h3>{this.state.name} kirjautuneena sisään</h3>
-        <br/>
+        {this.state.name} kirjautuneena sisään  <form onSubmit={this.logout}> <button type="submit">Kirjaudu ulos</button> </form>
+        <br />
+        <br />
         {this.state.blogs.map(blog =>
           <Blog key={blog._id} blog={blog} />
         )}
