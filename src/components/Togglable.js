@@ -1,6 +1,12 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 
 class Togglable extends React.Component {
+
+    static propTypes = {
+        buttonLabel: PropTypes.string.isRequired
+    }
+    
 
     constructor(props) {
         console.log('luodaan togglen propsit ja statet')
@@ -14,6 +20,8 @@ class Togglable extends React.Component {
         this.setState({ visible: !this.state.visible })
     }
 
+    
+
     render() {
 
         const hideWhenVisible = { display: this.state.visible ? 'none' : '' }
@@ -22,6 +30,7 @@ class Togglable extends React.Component {
         return (
             <div>
                 <div style={hideWhenVisible}>
+
                     <button onClick={this.toggleVisibility}>{this.props.buttonLabel}</button>
                 </div>
                 <div style={showWhenVisible}>
@@ -32,5 +41,6 @@ class Togglable extends React.Component {
         )
     }
 }
+
 
 export default Togglable;  
