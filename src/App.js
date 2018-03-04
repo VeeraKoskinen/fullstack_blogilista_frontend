@@ -1,10 +1,12 @@
 import React from 'react'
 import Blog from './components/Blog'
-/* import LoginForm from './components/LoginForm' */
+import LoginForm from './components/LoginForm'
+import AddingForm from './components/AddingForm'
 import blogService from './services/blogs'
 import loginService from './services/loginService'
 import Notification from './components/Notification'
 import './index.css'
+
 
 class App extends React.Component {
   constructor(props) {
@@ -21,7 +23,9 @@ class App extends React.Component {
 
       title: "",
       author: "",
-      url: ""
+      url: "",
+
+      loginVisible: false
     }
   }
 
@@ -36,7 +40,6 @@ class App extends React.Component {
       blogService.setToken(user.token)
       this.setState({ name: user.name })
     }
-
   }
 
   handleFieldChange = (event) => {
@@ -96,22 +99,36 @@ class App extends React.Component {
         url: ""
       })
 
-      setTimeout(() => {
-        this.setState({ error: null })
-      }, 5000)
-
     } catch (exception) {
       this.updateError("blogia ei voitu lisätä")
 
-
       console.log(exception)
       console.log(this.state.error)
-
-      setTimeout(() => {
-        this.setState({ error: null })
-      }, 5000)
     }
+  }
 
+  addingForm = () => {
+    const hideWhenVisible = { display: this.state.loginVisible ? 'none' : '' }
+    const showWhenVisible = { display: this.state.loginVisible ? '' : 'none' }
+
+    return (
+      <div>
+        <div style={hideWhenVisible}>
+          <button onClick={e => this.setState({ loginVisible: true })}>Lisää uusi blogi</button>
+        </div>
+        <div style={showWhenVisible}>
+          <AddingForm
+            visible={this.state.visible}
+            title={this.state.title}
+            author={this.state.author}
+            url={this.state.url}
+            handleFieldChange={this.handleFieldChange}
+            handleSubmit={this.addBlog}
+          />
+          <button onClick={e => this.setState({ loginVisible: false })}>peruuta</button>
+        </div>
+      </div>
+    )
   }
 
   updateNotification = (message) => {
@@ -128,35 +145,15 @@ class App extends React.Component {
     }, 3000)
   }
 
-  render() {
 
+
+  render() {
 
     if (this.state.user === null) {
       console.log('ensimmäinen if renderissä')
       return (
         <div>
-          <h2>Kirjaudu sovellukseen</h2>
-          <form onSubmit={this.login}>
-            <div>
-              käyttäjätunnus
-            <input
-                type="text"
-                name="username"
-                value={this.state.username}
-                onChange={this.handleFieldChange}
-              />
-            </div>
-            <div>
-              salasana
-            <input
-                type="password"
-                name="password"
-                value={this.state.password}
-                onChange={this.handleFieldChange}
-              />
-            </div>
-            <button type="submit"> Kirjaudu </button>
-          </form>
+          <LoginForm password={this.state.password} username={this.state.username} handleFieldChange={this.handleFieldChange} onSubmit={this.login} />
           <Notification message={this.state.error} className={"error"} />
         </div>
       )
@@ -175,37 +172,8 @@ class App extends React.Component {
         <Notification message={this.state.notification} className={"notification"} />
         <Notification message={this.state.error} className={"error"} />
 
-        <h2>Luo uusi</h2>
-        <form onSubmit={this.addBlog}>
-          <div>
-            otsikko:
-          <input
-              type="text"
-              name="title"
-              value={this.state.title}
-              onChange={this.handleFieldChange}
-            />
-          </div>
-          <div>
-            omistaja:
-          <input
-              type="text"
-              name="author"
-              value={this.state.author}
-              onChange={this.handleFieldChange}
-            />
-          </div>
-          <div>
-            url:
-          <input
-              type="text"
-              name="url"
-              value={this.state.url}
-              onChange={this.handleFieldChange}
-            />
-          </div>
-          <button type="submit">Luo blogi</button>
-        </form>
+        <br />
+        {this.addingForm()}
       </div>
     )
   }
