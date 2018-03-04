@@ -138,6 +138,24 @@ class App extends React.Component {
     }, 3000)
   }
 
+  liking = async (blogToUpdate) => {
+
+    const updatedBlog = {
+      user: blogToUpdate.user,
+      title: blogToUpdate.title,
+      author: blogToUpdate.author,
+      url: blogToUpdate.url,
+      likes: blogToUpdate.likes + 1
+    }
+
+    console.log(updatedBlog)
+    console.log(blogToUpdate.id)
+
+    blogService.update(blogToUpdate.id, updatedBlog)
+    const blogs = await blogService.getAll()
+    this.setState({ blogs })
+  }
+
   render() {
 
     if (this.state.user === null) {
@@ -157,7 +175,7 @@ class App extends React.Component {
         <br />
         <br />
         {this.state.blogs.map(blog =>
-          <Blog key={blog._id} blog={blog} />
+          <Blog key={blog._id} blog={blog} function={() => this.liking(blog)}/>
         )}
 
         <Notification message={this.state.notification} className={"notification"} />
