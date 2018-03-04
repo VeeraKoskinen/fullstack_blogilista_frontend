@@ -2,6 +2,7 @@ import React from 'react'
 import Blog from './components/Blog'
 import LoginForm from './components/LoginForm'
 import AddingForm from './components/AddingForm'
+import Togglable from './components/Togglable'
 import blogService from './services/blogs'
 import loginService from './services/loginService'
 import Notification from './components/Notification'
@@ -25,7 +26,7 @@ class App extends React.Component {
       author: "",
       url: "",
 
-      loginVisible: false
+      visible: false
     }
   }
 
@@ -108,27 +109,19 @@ class App extends React.Component {
   }
 
   addingForm = () => {
-    const hideWhenVisible = { display: this.state.loginVisible ? 'none' : '' }
-    const showWhenVisible = { display: this.state.loginVisible ? '' : 'none' }
 
     return (
-      <div>
-        <div style={hideWhenVisible}>
-          <button onClick={e => this.setState({ loginVisible: true })}>Lisää uusi blogi</button>
-        </div>
-        <div style={showWhenVisible}>
-          <AddingForm
-            visible={this.state.visible}
-            title={this.state.title}
-            author={this.state.author}
-            url={this.state.url}
-            handleFieldChange={this.handleFieldChange}
-            handleSubmit={this.addBlog}
-          />
-          <button onClick={e => this.setState({ loginVisible: false })}>peruuta</button>
-        </div>
-      </div>
+      <Togglable buttonLabel="Lisää uusi blogi">
+        <AddingForm
+          title={this.state.title}
+          author={this.state.author}
+          url={this.state.url}
+          handleFieldChange={this.handleFieldChange}
+          handleSubmit={this.addBlog}
+        />
+      </Togglable>
     )
+
   }
 
   updateNotification = (message) => {
@@ -144,8 +137,6 @@ class App extends React.Component {
       this.setState({ error: null })
     }, 3000)
   }
-
-
 
   render() {
 

@@ -4,6 +4,12 @@ body {
     font-family: sans-serif;
 }
 
+.blog {
+    color: rgb(14, 12, 12);
+    border-style: double;
+    font-size: 16;
+}
+
 .error {
     color: rgb(255, 0, 128);
     background: rgb(250, 248, 248);
