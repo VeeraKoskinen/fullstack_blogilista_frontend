@@ -156,6 +156,22 @@ class App extends React.Component {
     this.setState({ blogs })
   }
 
+  sortBlogs = () => {
+    this.state.blogs.sort((a, b) => {
+      return this.compare(a, b) 
+    })
+  }
+
+  compare = (a, b) => {
+    if (a.likes < b.likes) {
+      return 1;
+    }
+    if (a.likes > b.likes) {
+      return -1;
+    }
+    return 0;
+  }
+
   render() {
 
     if (this.state.user === null) {
@@ -168,6 +184,7 @@ class App extends React.Component {
       )
     }
 
+    this.sortBlogs()
     return (
       <div>
         <h2>Blogit</h2>
